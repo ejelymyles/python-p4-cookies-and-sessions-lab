@@ -22,11 +22,25 @@ def clear_session():
 
 @app.route('/articles')
 def index_articles():
+    articles = Article.query.all()
 
-    pass
+    article_data = [article.to_dict() for article in articles]
+    return jsonify(article_data)
+
 
 @app.route('/articles/<int:id>')
 def show_article(id):
+
+    session.setdefault('page_views', 0)
+    session['page_views'] += 1
+
+    if session['page_views'] <=3:
+        article = Article.query.filter(Article.id==id).first()
+        article_data = article.to_dict()
+
+        return jsonify(article_data), 200
+    else:
+        return jsonify({'message':'Maximum pageview limit reached'}), 401
 
     pass
 
